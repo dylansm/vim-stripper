@@ -22,12 +22,22 @@ endif
 "     let g:StripperNoStripOnSave = 1
 function! s:strip_on_save()
   if ! exists('g:StripperNoStripOnSave') && index(g:StripperIgnoreFileTypes, &ft) < 0
-    execute ':Stripper'
+    execute ':StripWhiteSpaces'
   endif
 endfunction
 
 " Register :Stripper as a vim command
 command! -range=% Stripper execute '<line1>,<line2>s/\s\+$//e'
+
+function! s:StripWhiteSpaces()
+  let save_cursor = getpos(".")
+  let old_query = getreg('/')
+  :%s/\s\+$//e
+  call setpos('.', save_cursor)
+  call setreg('/', old_query)
+endfunction
+
+command! -range=% StripWhiteSpaces :silent call <SID>StripWhiteSpaces()
 
 " Setup autocmds to strip whitespace when a buffer is saved
 augroup Stripper
